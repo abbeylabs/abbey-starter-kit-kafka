@@ -1,8 +1,8 @@
 terraform {
   backend "http" {
-    address        = "http://localhost:3000/terraform-http-backend"
-    lock_address   = "http://localhost:3000/terraform-http-backend/lock"
-    unlock_address = "http://localhost:3000/terraform-http-backend/unlock"
+    address        = "https://api.abbey.io/terraform-http-backend"
+    lock_address   = "https://api.abbey.io/terraform-http-backend/lock"
+    unlock_address = "https://api.abbey.io/terraform-http-backend/unlock"
     lock_method    = "POST"
     unlock_method  = "POST"
   }
