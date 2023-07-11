@@ -22,6 +22,7 @@ terraform {
 
 provider "abbey" {
   # Configuration options
+  bearer_token = var.abbey_token
 }
 
 provider "kafka" {
