@@ -10,7 +10,7 @@ terraform {
   required_providers {
     abbey = {
       source = "abbeylabs/abbey"
-      version = "0.1.4"
+      version = "0.2.2"
     }
 
     kafka = {
@@ -46,22 +46,20 @@ resource "abbey_grant_kit" "kafka_pii_acl" {
     ]
   }
 
-  policies = {
-    grant_if = [
-      {
-        query = <<-EOT
-          package main
+  policies = [
+    {
+      query = <<-EOT
+        package main
 
-          import data.abbey.functions
+        import data.abbey.functions
 
-          allow[msg] {
-            true; functions.expire_after("24h")
-            msg := "granting access for 24 hours"
-          }
-        EOT
-      }
-    ]
-  }
+        allow[msg] {
+          true; functions.expire_after("24h")
+          msg := "granting access for 24 hours"
+        }
+      EOT
+    }
+  ]
 
   output = {
     location = "github://organization/repo/access.tf"
