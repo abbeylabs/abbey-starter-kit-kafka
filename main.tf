@@ -10,7 +10,7 @@ terraform {
   required_providers {
     abbey = {
       source = "abbeylabs/abbey"
-      version = "0.2.2"
+      version = "0.2.4"
     }
 
     kafka = {
@@ -48,27 +48,16 @@ resource "abbey_grant_kit" "kafka_pii_acl" {
   }
 
   policies = [
-    {
-      query = <<-EOT
-        package main
-
-        import data.abbey.functions
-
-        allow[msg] {
-          true; functions.expire_after("24h")
-          msg := "granting access for 24 hours"
-        }
-      EOT
-    }
+    { bundle = "github://organization/repo/policies" }
   ]
 
   output = {
     location = "github://organization/repo/access.tf"
     append = <<-EOT
-      resource "kafka_acl" "principal_{{ .data.system.abbey.secondary_identities.kafka.principal }}" {
+      resource "kafka_acl" "principal_{{ .data.system.abbey.identities.kafka.principal }}" {
         resource_name = "syslog"
         resource_type = "Topic"
-        acl_principal = "User:{{ .data.system.abbey.secondary_identities.kafka.principal }}"
+        acl_principal = "User:{{ .data.system.abbey.identities.kafka.principal }}"
         acl_host = "*"
         acl_operation = "Read"
         acl_permission_type = "Allow"
@@ -78,20 +67,11 @@ resource "abbey_grant_kit" "kafka_pii_acl" {
 }
 
 resource "abbey_identity" "user_1" {
-  name = "replace-me"
-
-  linked = jsonencode({
-    abbey = [
-      {
-        type  = "AuthId"
-        value = "replace-me@example.com"
-      }
-    ]
-
-    kafka = [
-      {
-        principal = "replaceme"
-      }
-    ]
-  })
+  abbey_account = "replace-me@example.com"
+  source = "kafka"
+  metadata = jsonencode(
+    {
+      principal = "replaceme"
+    }
+  )
 }
